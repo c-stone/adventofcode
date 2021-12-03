@@ -2011,13 +2011,9 @@ const testInputs = `199
 263`;
 
 const inputsArray = inputsRaw.split('\n').map(Number);
-const summer = (prev, curr) => prev + curr;
 
 let sum = inputsArray.reduce((count, curr, index, array) => {
-  let firstTrio = [curr, array[index+1], array[index+2]].filter(Number);
-  let secondTrio = [array[index+1], array[index+2], array[index+3]].filter(Number);
-
-  return secondTrio.length === 3 && firstTrio.length === 3 && secondTrio.reduce(summer) > firstTrio.reduce(summer) ? count+1 : count
+  return array[index+3] && array[index+3] > curr ? count+1 : count
 }, 0);
 
 console.log(sum);
