@@ -2012,9 +2012,7 @@ const testInputs = `199
 
 const inputsArray = inputsRaw.split('\n').map(Number);
 
-
 let sum = inputsArray.reduce((prev, curr, index, array) => {
-  console.log(curr, array[index-1]);
   return curr > array[index-1] ? prev+1 : prev;
 }, 0);
 
