@@ -1,16 +1,47 @@
 const data = require("fs").readFileSync("input.txt", { encoding: "utf-8" }).trim();
+const pairs = data.split('\n').map(pair => pair.split(','))
 
-// Camp Clean Up
-  // Sections contain unique ID
-  // Each elf assigned a range of section IDs, like 2-6
-    // Elfs grouped by pairs
-      // Some assignments are fully contained by their pairs assignement: 4-6, fully contained by 2-6
-  // In how many pairs does one range fully contain the other?
+const enumerateRange = (range) => {
+  const startNum = parseInt(range.split('-')[0]);
+  const endNum = parseInt(range.split('-')[1]);
+  let numList = [];
 
-const pairs = data.split('\n');
+  if (startNum === endNum) {
+    return [startNum];
+  }
 
+  for (let i = startNum; i < endNum+1; i++) {
+    numList.push(i);
+  }
 
+  return numList;
+};
 
+const detectOverlaps = (rangePair) => {
+  const range1 = rangePair[0];
+  const range2 = rangePair[1];
 
+  const containedInFirst = range1
+    .map(num => range2.includes(num) ? 0 : 1)
+    .reduce((a,b)=> a+b);
 
-console.log(pairs);
+  const containedInSecond = range2
+    .map(num => range1.includes(num) ? 0 : 1)
+    .reduce((a,b)=> a+b);
+
+  return [containedInFirst, containedInSecond];
+};
+
+const countOverlaps = (acc, currRange) => {
+  if (currRange.includes(0)) {
+    return ++acc;
+  }
+  return acc;
+};
+
+const enumeratedRanges = pairs.map(pair => pair.map(enumerateRange));
+const overlapedRanges = enumeratedRanges.map(detectOverlaps);
+const overlapedCount = overlapedRanges.reduce(countOverlaps, 0);
+
+// Log Solution
+console.log(overlapedCount);
