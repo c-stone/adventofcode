@@ -33,7 +33,7 @@ const detectOverlaps = (rangePair) => {
 };
 
 const countOverlaps = (acc, currRange) => {
-  if (currRange.includes(0)) {
+  if (currRange[0] > 0 || currRange[1] > 0) {
     return ++acc;
   }
   return acc;
