@@ -23,7 +23,7 @@ rows.forEach((row, rowIndex) => {
     const treesToCompare = [above, right, below, left];
     const treeVisibilityByDirection = treesToCompare.map(direction => direction.some(otherTree => otherTree >= tree));
     const isTreeVisible = treeVisibilityByDirection.some(invisible => !invisible);
-g
+
     if (isFirstOrLastRow || isFirstOrLastTreeInRow) {
       visibleCount++;
       return;
