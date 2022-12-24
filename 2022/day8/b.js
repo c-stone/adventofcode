@@ -1,45 +1,40 @@
-const rows = require("fs").readFileSync("input.txt", { encoding: "utf-8" }).trim().split('\n');
+const lines = require("fs").readFileSync("input.txt", { encoding: "utf-8" }).trim().split('\n');
 
-const width = rows[0].length;
-const height = rows.length;
+const numGrid = lines.map((line) => line.split("").map((num) => parseInt(num)));
 
-let visibleCount = 0;
+let bestScore = 0;
 
-rows.forEach((row, rowIndex) => {
-  row = row.split('');
+const treeIsVisible = (x, y) => {
+  const tree = numGrid[x][y];
+  let a = 0;
+  let b = 0;
+  let c = 0;
+  let d = 0;
 
-  row.forEach((currentTree, columnIndex) => {    
-    const currentRow = [...row];
-    const currentColumn = [...rows].map(x => x[columnIndex]);
+  for (let j = x - 1; j >= 0; j--) {
+    a++;
+    if (numGrid[j][y] >= tree) break;
+  }
+  for (let j = x + 1; j < numGrid.length; j++) {
+    b++;
+    if (numGrid[j][y] >= tree) break;
+  }
+  for (let k = y - 1; k >= 0; k--) {
+    c++;
+    if (numGrid[x][k] >= tree) break;
+  }
+  for (let k = y + 1; k < numGrid[x].length; k++) {
+    d++;
+    if (numGrid[x][k] >= tree) break;
+  }
+  const scenicScore = a * b * c * d;
+  if (scenicScore > bestScore) bestScore = scenicScore;
+};
 
-    const above = currentColumn.slice(0, rowIndex);
-    const right = currentRow.slice(columnIndex+1, width);
-    const below = currentColumn.slice(rowIndex+1, height);
-    const left = currentRow.slice(0, columnIndex);
-    const treesToCompare = [above, right, below, left];
+for (let x = 0; x < numGrid.length; x++) {
+  for (let y = 0; y < numGrid[x].length; y++) {
+    treeIsVisible(x, y);
+  }
+}
 
-
-    const treeCounts = treesToCompare.map(treesByDirection => {
-      let count = 0;
-
-      treesByDirection.every(otherTree => {
-        if (otherTree < currentTree) {
-          count++
-          return true;
-        }
-
-        if (otherTree >= tree) {
-          count++
-          return false;
-        }
-      })
-
-      return count;
-    });
-
-    console.log(treeCounts);
-  });
-});
-
-// Solution
-console.log(visibleCount);
+console.log(bestScore);
