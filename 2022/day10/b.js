@@ -1,59 +1,31 @@
-const commands = require("fs")
+const lines = require("fs")
   .readFileSync("input.txt", { encoding: "utf-8" })
   .trim()
-  .split('\n').map(input => input.split(' '));
+  .split('\n')
 
-const cycleCheck = [40, 80, 120, 160, 200, 240];
+  let x = 1;
+  const instructions = [];
 
-let x = 1;
-let cycleIndex = 0;
-let buffer = 0;
-let spritePositions = [0, 1, 2];
+  for (let i = 0; i < lines.length; i++) {
+    instructions.push(0);
 
-let imgRowIndex = 0;
-let img = [
-  [],
-  [],
-  [],
-  [],
-  [],
-  []
-]
-
-commands.forEach(command => {
-  let cycleCount = 1;
-  
-  if (command[1]) {
-    cycleCount = 2;
-    buffer = parseInt(command[1]);
+    const [ins, amount] = lines[i].split(" ");
+    if (ins === "addx") instructions.push(parseInt(amount));
   }
 
-  while (cycleCount > 0) {
-    cycleIndex++;
-    cycleCount--;
+  // define grid of 40x6
+  const grid = Array.from({ length: 6 }, () =>
+    new Array(40).fill(" ")
+  );
 
-    if (cycleCheck.includes(cycleIndex)) {
-      imgRowIndex++;
-    }
+  instructions.forEach((ins, index) => {
+    const [dx, dy] = [index % 40, Math.floor(index / 40)];
 
-    if (spritePositions.includes(cycleIndex)) {
-      img[imgRowIndex].push('#');
-    } else {
-      img[imgRowIndex].push('.');
-    }
-  }
+    const shouldPaint = dx === x || dx === x - 1 || dx === x + 1;
+    grid[dy][dx] = shouldPaint ? "X" : " ";
+    x += ins;
+  });
 
-  if (Math.abs(buffer) > 0) {
-    x += buffer;
-    buffer = 0;
-
-    spritePositions = [];
-
-    for (let i = 0; i < 2; i++) {
-      spritePositions.push[x-1+i];
-    }
-
-  }
-})
-
-console.log(img);
+  grid.forEach((row) => {
+    console.log(row.join(""));
+  });
