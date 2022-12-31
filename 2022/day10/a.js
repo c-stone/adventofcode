@@ -34,6 +34,4 @@ commands.forEach(command => {
   }
 })
 
-
 console.log(signals, signals.reduce((a,b)=>a+b));
-
