@@ -1,12 +1,11 @@
-const input = require("fs").readFileSync("input.txt", { encoding: "utf-8" })
-
-let worryLevel = 0;
+const input = require("fs").readFileSync("input.txt", { encoding: "utf-8" });
 
 const parseItemNums = (items) => {
   return items
     .replace(':', ',')
     .split(',')
-    .filter(item => !isNaN(item));
+    .filter(item => !isNaN(item))
+    .map(item => parseInt(item));
 };
 
 const makeWorryMod = (operation) => {
@@ -39,33 +38,69 @@ const parseDivisibilityNum = (test) => {
 
 const parseMonkeyIndex = (ifPhrase) => {
   const ifPhraseSplit = ifPhrase.split(' ');
-  console.log(ifPhraseSplit);
   return parseInt(ifPhraseSplit[9]);
 }
 
-const parseMonkeys = (monkiesInput) => {
- let byMonkey = monkiesInput.split('\n\n');
- 
- let monkeys = byMonkey.map(monk => {
+const parseMonkey = (monk) => {
   const monkStats = monk.split('\n');
-  const items = monkStats[1];
-  const operation = monkStats[2];
-  const test = monkStats[3];
-  const ifTrue = monkStats[4];
-  const ifFalse = monkStats[5];
+  const [_, items, operation, test, ifTrue, ifFalse] = monkStats;
 
-  const parsedMonkey = {
+  return {
     startingItems: parseItemNums(items),
     worryModifier: makeWorryMod(operation),
     divisibleBy: parseDivisibilityNum(test),
     trueIndex: parseMonkeyIndex(ifTrue),
     falseIndex: parseMonkeyIndex(ifFalse),
   }
+}
 
-  return parsedMonkey;
- });
-
- return monkeys
+const parseMonkeys = (monkiesInput) => {
+ return monkiesInput
+  .split('\n\n')
+  .map(parseMonkey);
 };
 
-const parsedMonkeys = parseMonkeys(input);
+const lowerWorryLevel = (worryLevel) => Math.floor(worryLevel / 3);
+
+const doRound = (monkies) => {
+  monkies.forEach((monk, i) => {
+    const {
+      startingItems,
+      worryModifier,
+      divisibleBy,
+      trueIndex,
+      falseIndex
+    }  = monk;
+
+    while (startingItems.length > 0) {
+      let worryLevel = startingItems.shift();
+
+      // inspect
+      worryLevel = worryModifier(worryLevel);
+      inspectCounts[i]++;
+
+      // relief
+      worryLevel = lowerWorryLevel(worryLevel);
+
+      // monk tests worry level and throws
+      if (worryLevel % divisibleBy === 0) {
+        parsedMonkeys[trueIndex].startingItems.push(worryLevel);
+      } else {
+        parsedMonkeys[falseIndex].startingItems.push(worryLevel);
+      }
+    }
+
+  });
+};
+
+// Go
+const inspectCounts = [0, 0, 0, 0, 0, 0, 0, 0];
+let parsedMonkeys = parseMonkeys(input);
+
+for (let i = 0; i < 20; i++) {
+  doRound(parsedMonkeys);
+}
+
+// Log Solution
+const sortedCounts = inspectCounts.sort((a, b) => a - b).reverse();
+console.log(sortedCounts[0] * sortedCounts[1]);
