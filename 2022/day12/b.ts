@@ -1,6 +1,8 @@
 export const x = "";
+import * as mod from "https://deno.land/std@0.170.0/http/server.ts";
 
-const input = require("fs").readFileSync("input.txt", { encoding: "utf-8" });
+const input = await Deno.readTextFile("./input.txt");
+// const input = await Deno.readTextFile("./test.txt");
 
 const grid = input.split("\n").map((r) => r.split(""));
 
@@ -56,7 +58,6 @@ const numberGrid = grid.map((row) =>
 );
 
 const allValidMoves = (point: Point) => {
-  const moves: Point[] = [];
   const { x, y } = point;
 
   const elevation = numberGrid[y][x];
